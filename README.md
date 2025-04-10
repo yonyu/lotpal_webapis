@@ -16,3 +16,6 @@ http://127.0.0.1:8080/healthz
 
 http://127.0.0.1:8080/
 
+```
+cargo add actix-web-httpauth base64 ring fastrand
+```

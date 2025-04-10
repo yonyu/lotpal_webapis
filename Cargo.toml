@@ -5,5 +5,9 @@ edition = "2024"
 
 [dependencies]
 actix-web = "4"
+actix-web-httpauth = "0.8.2"
+base64 = "0.22.1"
+fastrand = "2.3.0"
+ring = "0.17.14"
 serde = {version = "1.0.219", features = ["derive"]}
 
