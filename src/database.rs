@@ -2,7 +2,33 @@ use config::Config;
 use std::error::Error;
 use rusqlite::Connection;
 use uuid::Uuid;
-use crate::schema::FlightPlan;
+use crate::schema::{FlightPlan, User};
+
+pub fn create_user(user: User) -> Result<String, Box<dyn Error>> {
+    let api_key = Uuid::new_v4().as_simple().to_string();    
+    let connection = get_database_connection()?;
+    let mut statement = connection.prepare("INSERT INTO users (full_name, api_key) VALUES (?, ?)")?;
+    let _ = statement.execute((user.name, api_key.clone()))?;
+    Ok(api_key)
+}
+
+pub fn get_user(api_key: String) -> Result<Option<User>, Box<dyn Error>> {
+    let connection = get_database_connection()?;
+    let mut statement = connection.prepare("SELECT * FROM users WHERE api_key = ?")?;
+    let query_result = statement.query_map([&api_key], |row| {
+        Ok(User {
+            name: row.get(1)?,
+            api_key: row.get(4)?
+        })
+    })?;
+
+    let mut user: Option<User> = None;
+    for api_user in query_result {
+        user = Some(api_user.unwrap());
+    }
+
+    Ok(user)
+}
 
 pub fn get_all_flight_plans() -> Result<Option<Vec<FlightPlan>>, Box<dyn Error>> {
     let mut flight_plan_list : Vec<FlightPlan> = Vec::new();
@@ -30,7 +56,7 @@ pub fn get_all_flight_plans() -> Result<Option<Vec<FlightPlan>>, Box<dyn Error>>
     })?;
 
     for plan in query_result {
-        flight_plan_list.push(plan?);
+        flight_plan_list.push(plan.unwrap());
     }
 
     match flight_plan_list.len() > 0 {
@@ -69,7 +95,7 @@ pub fn get_flight_plan_by_id(plan_id: String) -> Result<Option<FlightPlan>, Box<
     let mut flight_plan: Option<FlightPlan> = None;
 
     for plan in query_result {
-        flight_plan = Some(plan?);
+        flight_plan = Some(plan.unwrap());
         break;
     }
 
@@ -124,7 +150,75 @@ pub fn update_flight_plan(flight_plan: FlightPlan) -> Result<bool, Box<dyn Error
 fn get_database_connection() -> Result<Connection, Box<dyn Error>> {
     let settings = Config::builder()
         .add_source(config::File::with_name("config"))
-        .build()?;
-    let connection = Connection::open(settings.get_string("DATABASE_LOCATION")?)?;
+        .build()
+        .unwrap();
+    let connection = Connection::open(settings.get_string("DATABASE_LOCATION").unwrap())?;
     Ok(connection)
+}
+
+
+#[cfg(test)]
+mod test {
+    /// NOTE: These tests are expecting the default database rows to be in place.
+    /// If you change or remove any of the original 25 flight plans, one or more
+    /// of these tests WILL Fail
+    /// 
+    /// These tests are also destructive to the original database. The database WILL
+    /// need to be rebuilt after running these tests.
+    
+    use super::*;
+
+    #[test]
+    fn test_database_connection() {
+        let connection = get_database_connection().is_ok();
+        assert!(connection == true);
+    }
+
+    #[test]
+    fn test_database_has_rows() {
+        let row_count = get_all_flight_plans()
+                              .unwrap()
+                              .unwrap()
+                              .len();        
+        assert!(row_count == 25);
+    }
+
+    #[test]
+    fn test_insert_flight_plan() {
+        let flight_plan = FlightPlan {
+            flight_plan_id: String::from(""),
+            altitude: 1000,
+            airspeed: 200,
+            aircraft_identification: String::from("N7368F"),
+            aircraft_type: String::from("Cessna 172/S"),
+            arrival_airport: String::from("KBNA"),
+            departing_airport: String::from("KIAD"),
+            flight_type: String::from("IFR"),
+            departure_time: String::from("2022-04-05T03:25:46Z"),
+            estimated_arrival_time: String::from("2022-02-21T10:33:30Z"),
+            route: String::from("KMCO YQL T359 BURFA T359 KSLI"),
+            remarks: String::from("training"),
+            fuel_hours: 4,
+            fuel_minutes: 15,
+            number_onboard: 2,
+        };
+        assert!(insert_flight_plan(flight_plan).is_ok());
+    }
+
+    #[test]
+    fn test_get_flight_plan_by_id() {
+        let mut flight_plan_id = String::from("");
+        let connection = get_database_connection().unwrap();
+        let mut statement = connection.prepare("SELECT flight_plan_id FROM flight_plan WHERE id = (SELECT max(id) from flight_plan)").unwrap();
+        let mut query_result = statement.query_map([], |row| {
+            Ok(flight_plan_id = row.get(0).unwrap())
+        }).unwrap();
+
+        query_result.next();
+        assert!(!flight_plan_id.is_empty(), "cannot find a flight plan id");
+        
+        let last_flight_plan = get_flight_plan_by_id(flight_plan_id);
+        assert!(last_flight_plan.is_ok());
+    }    
+
 }

@@ -19,16 +19,38 @@ rusqlite = { version = "0.34.0", features = ["bundled"] }
 "bundled" means it locates the library file from SQLITE3_LIB_DIR
 
 ```Cargo.toml
-[dependencies]
-actix = "0.13.5"
-actix-web = "4"
-config = "0.15.11"
-env_logger = "0.11.8"
-rusqlite = { version = "0.34.0", features = ["bundled"] }
 serde = {version = "1.0.219", features = ["derive"]}
 serde_json = "1.0.140"
+rusqlite = { version = "0.34.0", features = ["bundled"] }
 uuid = {version = "1.16.0", features = [ "v4", "v7", ]}
+config = "0.15.11"
+env_logger = "0.11.8"
+actix = "0.13.5"
+actix-web = {version = "4.3.0", features= ["openssl"]}
+actix-web-httpauth = "0.8.0"
+openssl-sys = "0.9"
+openssl = { version = "0.10.72", features = ["vendored"] }
+actix-cors = "0.7.1"
+rustls = "0.23.26"
 ```
+
+## Build your Rust project which has openssl dependence on windows
+
+Reference: https://docs.rs/openssl/latest/openssl/
+
+1) Download and install openssl runtime full version
+https://slproweb.com/products/Win32OpenSSL.html
+
+2) Set environment variables and path:
+
+$env:OPENSSL_LIB_DIR="C:\Program Files\OpenSSL-Win64\lib\VC\x64\MT"
+$env:OPENSSL_INCLUDE_DIR="C:\Program Files\OpenSSL-Win64\include"
+
+$env:PATH += ";C:\Program Files\OpenSSL-Win64\bin"
+
+3) Install Strawberry Perl (x64)
+https://strawberryperl.com/
+
 
 
 #![allow(unused)]
