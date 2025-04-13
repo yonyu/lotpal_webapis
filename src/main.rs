@@ -64,7 +64,7 @@ async fn main() -> std::io::Result<()> {
 
     env_logger::init_from_env(Env::default().default_filter_or("info"));    
     HttpServer::new(move || {
-        let authentication_validator = HttpAuthentication::bearer(validator);
+        let authentication_validator = HttpAuthentication::bearer(validator); //
         App::new()
             .service(get_flight_plan_by_id)
             .service(get_all_flight_plans)
@@ -72,7 +72,7 @@ async fn main() -> std::io::Result<()> {
             .service(file_flight_plan)
             .service(update_flight_plan)
             .service(new_user)
-            .wrap(authentication_validator)
+            .wrap(authentication_validator) //
             .wrap(Logger::default())
             .wrap(
                 Cors::default()
@@ -82,7 +82,7 @@ async fn main() -> std::io::Result<()> {
             )
     })
         .bind(("127.0.0.1", 3000))?
-        .bind_openssl("127.0.0.1:3001", ssl_builder)?
+        .bind_openssl("127.0.0.1:3001", ssl_builder)? //
         .workers(2)
         .run()
         .await

@@ -14,6 +14,10 @@ Add environment variable SQLITE3_LIB_DIR = C:\DevTools\vcpkg\installed\x64-windo
 run command to create dukair.db from assets/database.sql
 sqlite3.exe dukair.db ".read database.sql"
 
+query:
+
+sqlite3 assets/duckair.db
+select * from users;
 
 rusqlite = { version = "0.34.0", features = ["bundled"] }
 "bundled" means it locates the library file from SQLITE3_LIB_DIR
@@ -55,6 +59,22 @@ https://strawberryperl.com/
 
 #![allow(unused)]
 
+cargo run
+
+run postman
+
 http://127.0.0.1:3000/api/v1/flightplan
 
+Get unauthorized
 
+Inside Postman, Authorization | Bearer Token | Token : f90ed373612749eda337c9a4d537c247
+
+http://127.0.0.1:3000/api/v1/flightplan
+
+or
+
+https://127.0.0.1:3001/api/v1/flightplan
+
+will get list of the plans.
+
+Note: f90ed373612749eda337c9a4d537c247 is the api key for the default user: John Smith
