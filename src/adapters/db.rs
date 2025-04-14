@@ -111,11 +111,11 @@ impl Cn649Repository for PgCn649Repository {
     }
 }
 
-// Add this function to establish database connection
-pub async fn establish_connection() -> Result<PgPool, sqlx::Error> {
-    let database_url = std::env::var("DATABASE_URL")
-        .expect("DATABASE_URL must be set");
+// // Add this function to establish database connection
+// pub async fn establish_connection() -> Result<PgPool, sqlx::Error> {
+//     let database_url = std::env::var("DATABASE_URL")
+//         .expect("DATABASE_URL must be set");
     
-    let pool = PgPool::connect(&database_url).await?;
-    Ok(pool)
-}
+//     let pool = PgPool::connect(&database_url).await?;
+//     Ok(pool)
+// }

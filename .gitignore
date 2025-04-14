@@ -25,3 +25,5 @@ master.key
 
 # Windows executables
 **/*.exe
+
+.env
