@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use chrono::NaiveDate;
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Cn649 {
     pub serial_number: i32,

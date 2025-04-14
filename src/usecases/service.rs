@@ -1,10 +1,11 @@
 use crate::{domain::models::Cn649, usecases::repository::Cn649Repository};
 
+#[derive(Clone)] 
 pub struct Cn649Service<T: Cn649Repository> {
     repository: T,
 }
 
-impl<T: Cn649Repository> Cn649Service<T> {
+impl<T: Cn649Repository + Send + Sync> Cn649Service<T> {
     pub fn new(repository: T) -> Self {
         Self { repository }
     }

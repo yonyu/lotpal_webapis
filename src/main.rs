@@ -6,7 +6,9 @@ mod domain;
 use actix_web::{web, App, HttpServer};
 use sqlx::PgPool;
 use crate::{adapters::db::PgCn649Repository, usecases::service::Cn649Service};
-use config::get_database_url;
+use crate::adapters::controllers;
+//use config::get_database_url;
+
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -19,7 +21,10 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(service.clone()))
-            .route("/entries", web::get().to(crate::adapters::controllers::get_all))
+            //.route("/entries", web::get().to(crate::adapters::controllers::get_all))
+
+            .route("/entries", web::get().to(controllers::get_all))
+            .route("/entries/{id}", web::get().to(controllers::get_by_id))
             // Add routes for CRUD endpoints here
     })
     .bind("127.0.0.1:8080")?
