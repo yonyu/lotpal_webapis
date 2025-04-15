@@ -22,4 +22,35 @@ pub async fn get_by_id(
     }
 }
 
+pub async fn create(
+    entry: web::Json<crate::domain::models::Cn649>,
+    service: web::Data<Cn649Service<PgCn649Repository>>
+) -> impl Responder {
+    match service.create(&entry.into_inner()).await {
+        Ok(_) => HttpResponse::Created().finish(),
+        Err(_) => HttpResponse::InternalServerError().finish(),
+    }
+}
+
+pub async fn update(
+    id: web::Path<i32>,
+    entry: web::Json<crate::domain::models::Cn649>, // entities::Cn649Entry
+    service: web::Data<Cn649Service<PgCn649Repository>>
+) -> impl Responder {
+    match service.update(id.into_inner(), &entry.into_inner()).await {
+        Ok(_) => HttpResponse::Ok().finish(),
+        Err(_) => HttpResponse::InternalServerError().finish(),
+    }
+}
+
+pub async fn delete(
+    id: web::Path<i32>,
+    service: web::Data<Cn649Service<PgCn649Repository>>
+) -> impl Responder {
+    match service.delete(id.into_inner()).await {
+        Ok(_) => HttpResponse::Ok().finish(),
+        Err(_) => HttpResponse::InternalServerError().finish(),
+    }
+}
+
 // Similarly, implement CRUD endpoints for create, update, delete, and get_by_id.

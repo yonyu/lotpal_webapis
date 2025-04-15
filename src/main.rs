@@ -23,8 +23,11 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(service.clone()))
             //.route("/entries", web::get().to(crate::adapters::controllers::get_all))
 
-            .route("/entries", web::get().to(controllers::get_all))
-            .route("/entries/{id}", web::get().to(controllers::get_by_id))
+            .route("/cn649", web::get().to(controllers::get_all))
+            .route("/cn649/{id}", web::get().to(controllers::get_by_id))
+            .route("/cn649", web::post().to(controllers::create))
+            .route("/cn649/{id}", web::put().to(controllers::update))
+            .route("/cn649/{id}", web::delete().to(controllers::delete))
             // Add routes for CRUD endpoints here
     })
     .bind("127.0.0.1:8080")?
